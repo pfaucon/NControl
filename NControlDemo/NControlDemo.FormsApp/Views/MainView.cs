@@ -196,6 +196,7 @@ namespace NControlDemo.FormsApp.Views
         /// <returns>The chrome async.</returns>
         private Task ToggleChromeAsync()
         {
+			// WARNING: this is launched on a background thread yielding warnings on android/iOS
             if (_chromeVisible)
                 return HideChromeAsync();
 
