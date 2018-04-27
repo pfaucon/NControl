@@ -1,14 +1,12 @@
 ﻿using NControl.Abstractions;
 using NControl.UWP;
-using NGraphics;
+using NGraphics.UWP;
 using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.UWP;
 
@@ -21,27 +19,9 @@ namespace NControl.UWP
     public class NControlViewRenderer : ViewRenderer<NControlView, NControlNativeView>
     {
         /// <summary>
-        /// Canvas element
-        /// </summary>
-        protected Canvas Canvas;
-
-        /// <summary>
-        /// Border element
-        /// </summary>
-        protected Border Border;
-
-        /// <summary>
-        /// Used for registration with dependency service
-        /// </summary>
-        public static void Init()
-        {
-        }
-
-        /// <summary>
         /// Constructor
         /// </summary>
-        public NControlViewRenderer()
-            : base()
+        public NControlViewRenderer() : base()
         {
             PointerPressed += OnPointerPressed;
             PointerMoved += OnPointerMoved;
@@ -68,21 +48,16 @@ namespace NControl.UWP
             if ((e.OldElement != null) && (e.NewElement == null) && (Control == null))
                 return;
 
-
             if (Control == null)
             {
-                var ctrl = new NControlNativeView();
-                Canvas = new Canvas();
-                Border = new Border
+                var nativeControl = new NControlNativeView()
                 {
-                    Child = Canvas,
+                    HorizontalAlignment = Windows.UI.Xaml.HorizontalAlignment.Stretch,
+                    VerticalAlignment = Windows.UI.Xaml.VerticalAlignment.Stretch
                 };
-
-                ctrl.Children.Add(Border);
-
-                SetNativeControl(ctrl);
-
-                UpdateClip();
+                nativeControl.SizeChanged += delegate { RedrawControl(); };
+                SetNativeControl(nativeControl);
+                //UpdateClip();
                 UpdateInputTransparent();
             }
 
@@ -111,19 +86,11 @@ namespace NControl.UWP
             if (Control == null)
                 return;
 
-            if (e.PropertyName == Layout.IsClippedToBoundsProperty.PropertyName)
-                UpdateClip();
-
-            else if (e.PropertyName == VisualElement.HeightProperty.PropertyName ||
-                e.PropertyName == VisualElement.WidthProperty.PropertyName)
-            {
-                // Redraw when height/width changes
-                UpdateClip();
+            if (e.PropertyName == VisualElement.HeightProperty.PropertyName ||
+                e.PropertyName == VisualElement.WidthProperty.PropertyName ||
+                e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
                 RedrawControl();
-            }
-            else if (e.PropertyName == NControlView.BackgroundColorProperty.PropertyName)
-                RedrawControl();
-            else if (e.PropertyName == NControlView.InputTransparentProperty.PropertyName)
+            else if (e.PropertyName == VisualElement.InputTransparentProperty.PropertyName)
                 UpdateInputTransparent();
         }
 
@@ -230,29 +197,31 @@ namespace NControl.UWP
             if (Element.Width.Equals(-1) || Element.Height.Equals(-1))
                 return;
 
-            if (Canvas == null)
+
+            if (Control == null)
                 return;
 
-            Canvas.Children.Clear();
-            var canvas = new CanvasCanvas(Canvas);
+            var width = Convert.ToInt32(Control.ActualWidth);
+            var height = Convert.ToInt32(Control.ActualHeight);
+            if (width == 0 || height == 0)
+                return;
 
-            Element.Draw(canvas, new NGraphics.Rect(0, 0, Element.Width, Element.Height));
+            var canvas = Platforms.Current.CreateImageCanvas(new NGraphics.Size(width, height));
+            Element.Draw(canvas, new NGraphics.Rect(0, 0, width, height));
+            var bitmapSource = new BitmapImage();
+            var stream = new MemoryStream();
+            canvas.GetImage().SaveAsPng(stream);
+            stream.Seek(0, SeekOrigin.Begin);
+            bitmapSource.SetSource(stream.AsRandomAccessStream());
+            Control.Fill = new ImageBrush
+            {
+                ImageSource = bitmapSource
+            };
         }
 
         #endregion
 
         #region Private Members
-
-        /// <summary>
-        /// Updates clic on the element
-        /// </summary>
-        private void UpdateClip()
-        {
-            if (Element.Width.Equals(-1) || Element.Height.Equals(-1))
-                return;
-
-            Control.SetClip(Element.IsClippedToBounds);
-        }
 
         /// <summary>
         /// Updates the IsHitTestVisible property on the native control

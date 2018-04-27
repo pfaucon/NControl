@@ -20,3 +20,6 @@ Components/
 */*/Resource.designer.cs
 */*/*/Resource.designer.cs
 */*/*/*/Resource.designer.cs
+.vs/
+project.lock.json
+*.nupkg

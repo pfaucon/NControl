@@ -153,6 +153,7 @@ namespace NControl.Abstractions
 
         #region Touches
 
+	    DateTime bounceChecker = DateTime.Now;
         /// <summary>
         /// Touchs down.
         /// </summary>
@@ -161,6 +162,12 @@ namespace NControl.Abstractions
         {
             if (OnTouchesBegan != null)
             {
+                // HACK: UWP receives double-taps on all windows, this should protect from it without harming other platforms
+                if (Device.RuntimePlatform.Equals(Device.UWP) && DateTime.Now.Subtract(bounceChecker).TotalMilliseconds < 10)
+                {
+                    return true;
+                }
+                bounceChecker = DateTime.Now;
                 OnTouchesBegan(this, points);
                 return true;
             }
