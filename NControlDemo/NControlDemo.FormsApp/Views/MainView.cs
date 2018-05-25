@@ -210,9 +210,26 @@ namespace NControlDemo.FormsApp.Views
         {
             _chromeVisible = true;
 
-            await Task.WhenAll(new []{
+            var translation = 0;
+            switch (Device.RuntimePlatform)
+            {
+                case Device.iOS:
+                    translation = 61;
+                    break;
+                case Device.Android:
+                    translation = 80;
+                    break;
+                case Device.UWP:
+                    translation = 55;
+                    break;
+                default:
+                    break;
+            }
+
+            await Task.WhenAll(new[]{
                 _bottomBar.TranslateTo(0, -_bottomBar.Height, 550, Easing.BounceOut),
-                _navigationBar.TranslateTo(0, Device.OnPlatform<int>(61, 80, 55), 550, Easing.BounceOut),
+
+                _navigationBar.TranslateTo(0, translation, 550, Easing.BounceOut),
             }); 
         }
 

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2018
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{915A7419-1DC8-43AE-962D-2F1046F01070}"
 	ProjectSection(SolutionItems) = preProject
@@ -617,6 +617,9 @@ Global
 		{617C5658-90A2-4828-8609-F5959C66CF9C} = {A3E9ECE5-1DF0-4C35-BC22-19B72E356937}
 		{28EBD08D-5763-4027-9525-0F18B28D5F7B} = {915A7419-1DC8-43AE-962D-2F1046F01070}
 		{864B5ADF-4F2C-4A9D-97E0-F2CCFDB309A3} = {A3E9ECE5-1DF0-4C35-BC22-19B72E356937}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {18B1578A-2132-461D-9918-68E005421ECB}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0
