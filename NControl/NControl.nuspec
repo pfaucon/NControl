@@ -16,7 +16,6 @@
       <group>
         <dependency id="Xamarin.Forms" version="3.0.0.482510" />
         <dependency id="NGraphics" version="0.5.0-beta1" />
-        <dependency id="SharpDx" version="4.0.1" />
       </group>
 
       <group targetFramework="UAP10">
